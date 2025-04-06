@@ -113,11 +113,11 @@ void loop() {
       getFingerprintID();                           // checks to see if finger
       delay(100);
     }
-    digitalWrite(buzzer, LOW);
-    fingerprintMatched = true;
-    lcd.clear();
-    lcd.print("Good Morning!!");
-    delay(2000);
+    digitalWrite(buzzer, LOW);                    // turn of buzzer 
+    fingerprintMatched = true;                    // fingerprint match is already found
+    lcd.clear();                                  // clear display
+    lcd.print("Good Morning!!");                  // LCD print "Good morning"
+    delay(2000);                                // delay 2000 miliseconds
   } else {
     if (fingerprintMatched) {
       alarmTurnedOff = true;  // Set the flag to true when the fingerprint matches
