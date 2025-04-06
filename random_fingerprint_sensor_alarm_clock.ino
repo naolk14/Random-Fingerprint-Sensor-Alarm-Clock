@@ -152,9 +152,9 @@ timeDate readTimeDate() {
   info.Minutes = BCDToBin(Wire.read() & 0x7F);  // Convert and mask seconds (0-59)
   info.Hours = BCDToBin(Wire.read() & 0x3F);    // Convert and mask hours (0-23)
   info.Day = BCDToBin(Wire.read() & 0x07);      // Convert and mask day of the week (0-7)
-  info.Date = BCDToBin(Wire.read() & 0x3F);  // Convert and mask date (0-31)
-  info.Month = BCDToBin(Wire.read() & 0x1F);  // Convert and mask month (0-12)
-  info.Year = BCDToBin(Wire.read());  // Convert year
+  info.Date = BCDToBin(Wire.read() & 0x3F);     // Convert and mask date (0-31)
+  info.Month = BCDToBin(Wire.read() & 0x1F);    // Convert and mask month (0-12)
+  info.Year = BCDToBin(Wire.read());            // Convert year
 
   return info;  // Return the filled timeDate struct
 }
@@ -172,11 +172,11 @@ void displayTimeDate(timeDate td) {
   Serial.print("Time: ");      // serial print "Time: " on the liquid crystal display
   Serial.print(hourFormat);    // print the hour on the liquid crystal display
   Serial.print(":");           // print the colon to seperate the hour and minute
-  Serial.print(minuteFormat);  // print the minute
-  Serial.print(":");
-  Serial.print(secondFormat);
-  Serial.print(" | Date: ");
-  Serial.print(td.Day);  // Day of the week (1-7, 1 = Sunday)
+  Serial.print(minuteFormat);  // print the minutes
+  Serial.print(":");           // print the colon
+  Serial.print(secondFormat);  // print the seconds
+  Serial.print(" | Date: ");   // print "| Date: "
+  Serial.print(td.Day);        // Day of the week (1-7, 1 = Sunday)
   Serial.print(" ");
   Serial.print(2000 + td.Year);  // Year (formatted to 4 digits)
   Serial.print(" ");
