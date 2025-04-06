@@ -53,7 +53,7 @@ void setup() {
   lcd.begin(16, 2);     // Initialize LCD with 16 columns and 2 rows
   Serial.begin(9600);   // initializes serial comm
 
-  while (!Serial)       // while not serial
+  while (!Serial)  // while not serial
     ;
   delay(100);  // delay 100 miliseconds
 
@@ -68,36 +68,36 @@ void setup() {
   digitalWrite(buzzer, LOW);  // Set default buzzer state to LOW
   Serial.println("\n\nAdafruit finger detect test");
   finger.begin(57600);  // baud rate for software serial
-  delay(5);             // delay for 5 miliseconds
+  delay(5);             // delay to make sure sensor is properly initalized
 
   if (finger.verifyPassword()) {                  //checks if fingerprint sensor is initalized properly and that communication is established between sensor and nano
     Serial.println("Found fingerprint sensor!");  // Found fingerprint sensor!
     td = readTimeDate();                          // Get current time from RTC    // gets the current time + stores it in td variable
     displayTimeDate(td);                          // Display time on the LCD
   } else {
-    Serial.println("Did not find fingerprint sensor :("); // inform that sensor was not found 
-    lcd.clear();                                          // clear display
-    lcd.print("Sensor NOT FOUND");                        // display "Sensor NOT FOUND"
-    return;  // used to exist setup if sensor is not properly intialized
+    Serial.println("Did not find fingerprint sensor :(");  // inform that sensor was not found
+    lcd.clear();                                           // clear display
+    lcd.print("Sensor NOT FOUND");                         // display "Sensor NOT FOUND"
+    return;                                                // used to exist setup if sensor is not properly intialized
   }
 
-  finger.getTemplateCount();  // displays number of fingerprints stored in the sensor
-  if (finger.templateCount == 0) {    // if there are no fingerprint tempaltes,
+  finger.getTemplateCount();                                                      // displays number of fingerprints stored in the sensor
+  if (finger.templateCount == 0) {                                                // if there are no fingerprint tempaltes,
     Serial.print("No fingerprint data found. Please run the 'enroll' example.");  // serial print instructing user to enroll fingeprrint using enroll example
   } else {
     Serial.println("Waiting for valid finger...");  // serial print "Waiting for valid finger..."
     Serial.print("Sensor contains ");               // prints "Sensor contains"
     Serial.print(finger.templateCount);             // number of fingerprint templates
     Serial.print(" templates");                     // print "templates"
-    delay(1000);
+    delay(1000);                                    // delay 1000 miliseconds or 1 second
   }
 }
 void loop() {
   td = readTimeDate();  // Read current time from RTC
   displayTimeDate(td);  // Displays time without flickering
 
-  if (td.Hours == alarmHour && td.Minutes == alarmMinute) { // if the current hour and minute are equal to the alarm set hour and minute
-    alarmTurnedOff = false;  // Reset the flag when the alarm time is reached
+  if (td.Hours == alarmHour && td.Minutes == alarmMinute) {  // if the current hour and minute are equal to the alarm set hour and minute
+    alarmTurnedOff = false;                                  // Reset the flag when the alarm time is reached
 
     // Pick a random fingerprint ID to be scanned
     selectedFinger = random(1, 11);               // select a random number between 1 and 10 inclusive
@@ -107,38 +107,38 @@ void loop() {
 
     while (!fingerprintMatched && !alarmTurnedOff) {  // if the fingerprint match is not found and alarm is not turned off...
       digitalWrite(buzzer, HIGH);                     // sound buzzer for 900 miliseconds
-      delay(900);                                      // delay 
-      digitalWrite(buzzer, LOW);                       // stop sounding for 900 miliseconds and repeat until valid fingerprint
+      delay(900);                                     // delay 900 miliseconds
+      digitalWrite(buzzer, LOW);                      // stop sounding for 900 miliseconds and repeat until valid fingerprint
       delay(900);                                     // delay
-      getFingerprintID();                           // checks to see if finger
+      getFingerprintID();                             // checks to see if finger
       delay(100);
     }
-    digitalWrite(buzzer, LOW);                    // turn of buzzer 
-    fingerprintMatched = true;                    // fingerprint match is already found
-    lcd.clear();                                  // clear display
-    lcd.print("Good Morning!!");                  // LCD print "Good morning"
-    delay(2000);                                // delay 2000 miliseconds
+    digitalWrite(buzzer, LOW);    // turn of buzzer
+    fingerprintMatched = true;    // fingerprint match is already found
+    lcd.clear();                  // clear display
+    lcd.print("Good Morning!!");  // LCD print "Good morning"
+    delay(2000);                  // delay 2000 miliseconds
   } else {
     if (fingerprintMatched) {
       alarmTurnedOff = true;  // Set the flag to true when the fingerprint matches
     }
-    digitalWrite(buzzer, LOW);
+    digitalWrite(buzzer, LOW);  // set buzzer to low when match is found
   }
-  delay(1000);
+  delay(1000);  // delay 1000 miliseconds
 }
 
 void setTimeDate(uint8_t s, uint8_t m, uint8_t h, uint8_t d, uint8_t date, uint8_t mon, uint16_t y) {  //  takes parameters for seconds, minutes, etc
   // converts the seconds, months, hours, days, dates, months, years, from binary to BCD
   Wire.beginTransmission(DS1307_I2C_ADDRESS);  // Identify slave device
   Wire.write(0);                               // Set the first register address to fill
-  Wire.write(binToBCD(s));                     // Start queueing bytes to transmit
-  Wire.write(binToBCD(m));
-  Wire.write(binToBCD(h));
-  Wire.write(binToBCD(d));
-  Wire.write(binToBCD(date));
-  Wire.write(binToBCD(mon));
-  Wire.write(binToBCD(y % 100));  // Use last two digits of year
-  Wire.endTransmission();         // Ship the data to the RTC
+  Wire.write(binToBCD(s));                     // Convert and queue seconds to transmit
+  Wire.write(binToBCD(m));                     // Convert and queue minutes to transmit
+  Wire.write(binToBCD(h));                     // Convert and queue hours to transmit
+  Wire.write(binToBCD(d));                     // Convert and queue days to transmit
+  Wire.write(binToBCD(date));                  // Convert and queue dates to transmit
+  Wire.write(binToBCD(mon));                   // Convert and queue months to transmit
+  Wire.write(binToBCD(y % 100));               //  last two digits of year
+  Wire.endTransmission();                      // Ship the data to the RTC
 }
 
 timeDate readTimeDate() {
@@ -148,15 +148,18 @@ timeDate readTimeDate() {
   Wire.endTransmission();  // ends I2C communication with the DS1307 RTC
   Wire.requestFrom(DS1307_I2C_ADDRESS, 7);
 
-  info.Seconds = BCDToBin(Wire.read() & 0x7F);
-  info.Minutes = BCDToBin(Wire.read() & 0x7F);
-  info.Hours = BCDToBin(Wire.read() & 0x3F);
-  info.Day = BCDToBin(Wire.read() & 0x07);
-  info.Date = BCDToBin(Wire.read() & 0x3F);
-  info.Month = BCDToBin(Wire.read() & 0x1F);
-  info.Year = BCDToBin(Wire.read());
+  info.Seconds = BCDToBin(Wire.read() & 0x7F);  // Convert and mask seconds (0-59)
+  info.Minutes = BCDToBin(Wire.read() & 0x7F);  // Convert and mask seconds (0-59)
+  info.Hours = BCDToBin(Wire.read() & 0x3F);    // Convert and mask hours (0-23)
+  info.Day = BCDToBin(Wire.read() & 0x07);      // Convert and mask day of the week (0-7)
 
-  return info;
+  info.Date = BCDToBin(Wire.read() & 0x3F);  // Convert and mask date (0-31)
+
+  info.Month = BCDToBin(Wire.read() & 0x1F);  // Convert and mask month (0-12)
+
+  info.Year = BCDToBin(Wire.read());  // Convert year
+
+  return info;  // Return the filled timeDate struct
 }
 
 void displayTimeDate(timeDate td) {
@@ -220,7 +223,7 @@ uint8_t getFingerprintID() {
   printResult = finger.image2Tz();
   switch (printResult) {
     case FINGERPRINT_OK:  // Image converted successfully
-      Serial.println("Image converted");      
+      Serial.println("Image converted");
       break;
     case FINGERPRINT_IMAGEMESS:
       Serial.println("Image too messy");  // Image too messy
@@ -238,29 +241,29 @@ uint8_t getFingerprintID() {
 
   // Checks if a match is found or not
   printResult = finger.fingerFastSearch();
-  if (printResult == FINGERPRINT_OK) {  // if the fingerprint result
+  if (printResult == FINGERPRINT_OK) {        // if the fingerprint result
     if (finger.fingerID == selectedFinger) {  // the fingerprint match is found
       Serial.println("Found print match!");   // Serial print "Found print match"
-      lcd.clear();      // clear display
-      delay(500);       // delay 500 miliseconds
-      Serial.print("Welcome!"); // Serial print "Welcome!"
-      lcd.print("Welcome!");// LCD print "Welcome!"
-      fingerprintMatched = true;  // Set flag to true when match is found
-      alarmTurnedOff = true;      // Set the flag to true when the fingerprint matches
-      lcd.clear();                // clear display
-      delay(2000);                // delay 2000 miliseconds
+      lcd.clear();                            // clear display
+      delay(500);                             // delay 500 miliseconds
+      Serial.print("Welcome!");               // Serial print "Welcome!"
+      lcd.print("Welcome!");                  // LCD print "Welcome!"
+      fingerprintMatched = true;              // Set flag to true when match is found
+      alarmTurnedOff = true;                  // Set the flag to true when the fingerprint matches
+      lcd.clear();                            // clear display
+      delay(2000);                            // delay 2000 miliseconds
     } else {
       Serial.println("Wrong finger, try again");  // if printResult != selectedFinger
       lcd.setCursor(0, 1);                        // set cursor to first column, second row
       lcd.print("Wrong finger, try again");       // Print "Wrong finger, try again"
     }
-  } else if (printResult == FINGERPRINT_NOTFOUND) { // if finger is not found 
+  } else if (printResult == FINGERPRINT_NOTFOUND) {  // if finger is not found
     Serial.println("No match found");                // Serial print "No match found"
-    lcd.setCursor(0, 1);                            // first row second column
-    lcd.print("No match found");                    // Print "No match found"
+    lcd.setCursor(0, 1);                             // first row second column
+    lcd.print("No match found");                     // Print "No match found"
   } else {
-    Serial.println("Communication error");          // Communication error--> an issue besides a match found, not right match, or a finger not found 
+    Serial.println("Communication error");  // Communication error--> an issue besides a match found, not right match, or a finger not found
   }
-  return printResult;                               //capturing + processing print image
+  return printResult;  //capturing + processing print image
   // the result of getFingerprintID function
 }
