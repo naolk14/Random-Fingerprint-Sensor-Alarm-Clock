@@ -152,11 +152,8 @@ timeDate readTimeDate() {
   info.Minutes = BCDToBin(Wire.read() & 0x7F);  // Convert and mask seconds (0-59)
   info.Hours = BCDToBin(Wire.read() & 0x3F);    // Convert and mask hours (0-23)
   info.Day = BCDToBin(Wire.read() & 0x07);      // Convert and mask day of the week (0-7)
-
   info.Date = BCDToBin(Wire.read() & 0x3F);  // Convert and mask date (0-31)
-
   info.Month = BCDToBin(Wire.read() & 0x1F);  // Convert and mask month (0-12)
-
   info.Year = BCDToBin(Wire.read());  // Convert year
 
   return info;  // Return the filled timeDate struct
